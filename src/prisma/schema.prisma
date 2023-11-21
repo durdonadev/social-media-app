@@ -6,3 +6,61 @@ datasource db {
 generator client {
     provider = "prisma-client-js"
 }
+
+enum AccountStatus {
+    ACTIVE
+    INACTIVE
+}
+
+enum PostStatus {
+    PUBLIC
+    PRIVATE
+    ONLYFRIENDS
+}
+
+enum FriendStatus {
+    FRIEND
+    UNFRIEND
+}
+
+model User {
+    id                               String        @id @default(auto()) @map("_id") @db.ObjectId
+    email                            String        @unique
+    firstName                        String
+    lastName                         String
+    dateOfBirth                      DateTime
+    country                          String?
+    education                        String?
+    workExperience                   String?
+    password                         String
+    status                           AccountStatus @default(INACTIVE)
+    activationToken                  String?
+    passwordResetToken               String?
+    passwordResetTokenExpirationDate DateTime?
+    createdAt                        DateTime      @default(now())
+    updatedAt                        DateTime      @updatedAt
+}
+
+model Post {
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    title       String
+    description String
+    likes       Int      @default(0)
+    published   Boolean  @default(false)
+    authorId    String   @db.ObjectId
+}
+
+model Friend {
+    id          String       @id @default(auto()) @map("_id") @db.ObjectId
+    firstName   String
+    lastName    String
+    email       String       @unique
+    password    String?
+    status      FriendStatus @default(UNFRIEND)
+    userId      String       @db.ObjectId
+    inviteToken String?
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+}
