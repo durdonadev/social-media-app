@@ -202,15 +202,32 @@ class UserService {
         return user;
     };
 
-    changePassword = async (newPassword, userId) => {
-        const hashedPassword = await bcrypt.hash(newPassword);
+    changePassword = async (userId, input) => {
+        const user = await prisma.user.findFirst({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true,
+                password: true
+            }
+        });
+
+        const isPasswordMatches = await bcrypt.compare(
+            input.password,
+            user.password
+        );
+
+        if (!isPasswordMatches) {
+            throw new CustomError("Invalid Credentials", 401);
+        }
 
         await prisma.user.update({
             where: {
                 id: userId
             },
             data: {
-                password: hashedPassword
+                password: await bcrypt.hash(input.newPassword)
             }
         });
     };
