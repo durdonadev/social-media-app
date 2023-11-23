@@ -1,5 +1,5 @@
 import { catchAsync } from "../utils/catch-async.js";
-// import { CustomError } from "../utils/custom-error.js";
+import { CustomError } from "../utils/custom-error.js";
 import { userService } from "../services/user.services.js";
 
 class UserController {
@@ -110,6 +110,28 @@ class UserController {
 
         res.status(200).json({
             data: me
+        });
+    });
+
+    changePassword = catchAsync(async (req, res) => {
+        const { newPassword, newPasswordConfirm } = req.body;
+
+        if (!newPassword || !newPasswordConfirm)
+            throw new CustomError(
+                "All fields are required: New Password and New Password Confirmation",
+                400
+            );
+
+        if (newPassword !== newPasswordConfirm)
+            throw new CustomError(
+                "Password and Password Confirm does not match",
+                400
+            );
+
+        await userService.changePassword(newPassword, req.userId);
+
+        res.status(200).json({
+            message: "Password successfully updated!"
         });
     });
 }

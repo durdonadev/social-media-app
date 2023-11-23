@@ -201,6 +201,19 @@ class UserService {
 
         return user;
     };
+
+    changePassword = async (newPassword, userId) => {
+        const hashedPassword = await bcrypt.hash(newPassword);
+
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                password: hashedPassword
+            }
+        });
+    };
 }
 
 export const userService = new UserService();

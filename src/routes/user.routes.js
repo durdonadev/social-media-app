@@ -10,5 +10,10 @@ userRouter.post("/login", userController.login);
 userRouter.patch("/forgot-password", userController.forgotPassword);
 userRouter.patch("/reset-password", userController.resetPassword);
 userRouter.get("/me", authMiddleware.authenticate, userController.getMe);
+userRouter.patch(
+    "/change-password",
+    authMiddleware.authenticate,
+    userController.changePassword
+);
 
 export { userRouter };
