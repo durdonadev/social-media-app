@@ -113,6 +113,72 @@ class UserService {
 
         return token;
     };
+
+    forgotPassword = async (email) => {
+        const user = await prisma.user.findFirst({
+            where: {
+                email
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if (!user)
+            throw new CustomError(
+                "We could not find a user with the email you provided",
+                404
+            );
+
+        const passwordResetToken = crypto.createToken();
+        const hashedPasswordResetToken = crypto.hash(passwordResetToken);
+
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                passwordResetToken: hashedPasswordResetToken,
+                passwordResetTokenExpirationDate: date.addMinutes(10)
+            }
+        });
+
+        await mailer.sendPasswordResetToken(email, passwordResetToken);
+    };
+
+    resetPassword = async (token, password) => {
+        const hashedPasswordResetToken = crypto.hash(token);
+
+        const user = await prisma.user.findFirst({
+            where: {
+                passwordResetToken: hashedPasswordResetToken
+            },
+            select: {
+                id: true,
+                passwordResetToken: true,
+                passwordResetTokenExpirationDate: true
+            }
+        });
+
+        if (!user) throw new CustomError("Invalid Token", 401);
+
+        const currentTime = new Date();
+        const tokenExpDate = new Date(user.passwordResetTokenExpirationDate);
+
+        if (tokenExpDate < currentTime)
+            throw new CustomError("Reset Token Expired", 422);
+
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: await bcrypt.hash(password),
+                passwordResetToken: null,
+                passwordResetTokenExpirationDate: null
+            }
+        });
+    };
 }
 
 export const userService = new UserService();
