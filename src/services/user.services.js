@@ -12,6 +12,7 @@ class UserService {
         const hashedPassword = await bcrypt.hash(userInput.password);
         const activationToken = crypto.createToken();
         const hashedActivationToken = crypto.hash(activationToken);
+
         await prisma.user.create({
             data: {
                 ...userInput,
@@ -24,6 +25,37 @@ class UserService {
         });
 
         await mailer.sendActivationMail(userInput.email, activationToken);
+    };
+
+    activate = async (token) => {
+        const hashedActivationToken = crypto.hash(token);
+
+        const user = await prisma.user.findFirst({
+            where: {
+                activationToken: hashedActivationToken
+            },
+            select: {
+                id: true,
+                activationToken: true
+            }
+        });
+
+        if (!user) {
+            throw new CustomError(
+                "User does not exist with with provided Activation Token",
+                404
+            );
+        }
+
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                status: "ACTIVE",
+                activationToken: null
+            }
+        });
     };
 
     login = async (input) => {
@@ -80,36 +112,6 @@ class UserService {
         );
 
         return token;
-    };
-
-    activate = async (token) => {
-        const hashedActivationToken = crypto.hash(token);
-        const user = await prisma.user.findFirst({
-            where: {
-                activationToken: hashedActivationToken
-            },
-            select: {
-                id: true,
-                activationToken: true
-            }
-        });
-
-        if (!user) {
-            throw new CustomError(
-                "User does not exist with with provided Activation Token",
-                404
-            );
-        }
-
-        await prisma.user.update({
-            where: {
-                id: user.id
-            },
-            data: {
-                status: "ACTIVE",
-                activationToken: null
-            }
-        });
     };
 }
 
