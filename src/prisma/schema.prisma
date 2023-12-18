@@ -24,7 +24,7 @@ type WorkExperience {
     startYear Int
     endYear   Int
     company   String
-    location  Place
+    location  String
     position  String
 }
 
