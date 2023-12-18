@@ -15,5 +15,10 @@ userRouter.patch(
     authMiddleware.authenticate,
     userController.changePassword
 );
+userRouter.patch(
+    "/update-profile",
+    authMiddleware.authenticate,
+    userController.updateProfile
+);
 
 export { userRouter };

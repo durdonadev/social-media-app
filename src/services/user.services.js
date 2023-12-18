@@ -231,6 +231,17 @@ class UserService {
             }
         });
     };
+
+    updateProfile = async (userId, input) => {
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                ...input
+            }
+        });
+    };
 }
 
 export const userService = new UserService();
