@@ -114,24 +114,57 @@ class UserController {
     });
 
     changePassword = catchAsync(async (req, res) => {
-        const { newPassword, newPasswordConfirm } = req.body;
+        const { body } = req;
+        const input = {
+            password: body.password,
+            newPassword: body.newPassword,
+            newPasswordConfirm: body.newPasswordConfirm
+        };
 
-        if (!newPassword || !newPasswordConfirm)
+        if (!body.password || !body.newPassword || !body.newPasswordConfirm)
             throw new CustomError(
-                "All fields are required: New Password and New Password Confirmation",
+                "All fields are required: Current Password, New Password and New Password Confirmation",
                 400
             );
 
-        if (newPassword !== newPasswordConfirm)
+        if (body.newPassword !== body.newPasswordConfirm)
             throw new CustomError(
                 "Password and Password Confirm does not match",
                 400
             );
 
-        await userService.changePassword(newPassword, req.userId);
+        await userService.changePassword(req.userId, input);
 
         res.status(200).json({
             message: "Password successfully updated!"
+        });
+    });
+
+    updateProfile = catchAsync(async (req, res) => {
+        const {
+            email,
+            firstName,
+            lastName,
+            dateOfBirth,
+            currentPlace,
+            education,
+            workExperience
+        } = req.body;
+
+        const input = {
+            email,
+            firstName,
+            lastName,
+            dateOfBirth,
+            currentPlace,
+            education,
+            workExperience
+        };
+
+        await userService.updateProfile(req.userId, input);
+
+        res.status(200).json({
+            message: "Profile was updated successfully!"
         });
     });
 }

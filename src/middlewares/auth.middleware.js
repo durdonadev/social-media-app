@@ -19,9 +19,6 @@ class AuthMiddleware {
                 req.userId = payload.userId;
             }
 
-            if (payload.teamMember) {
-                req.teamMember = payload.teamMember;
-            }
             next();
         } catch (error) {
             throw new CustomError(error.message, 500);
