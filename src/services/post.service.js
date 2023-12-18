@@ -12,6 +12,33 @@ class PostService {
         });
         return post;
     };
+
+    getAll = async (userId) => {
+        const posts = await prisma.post.findMany({
+            where: {
+                userId: userId
+            }
+        });
+        return posts;
+    };
+
+    getOne = async (userId, postId) => {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: postId
+            }
+        });
+
+        if (!post) {
+            throw new CustomError("Post does not exist", 400);
+        }
+
+        if (post.userId !== userId) {
+            throw new CustomError("Post does not belong this user", 403);
+        }
+
+        return post;
+    };
 }
 
 export const postService = new PostService();

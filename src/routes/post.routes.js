@@ -10,5 +10,7 @@ postRouter.post(
     authMiddleware.isUser,
     postController.create
 );
+postRouter.get("/", authMiddleware.authenticate, postController.getAll);
+postRouter.get("/:id", authMiddleware.authenticate, postController.getOne);
 
 export { postRouter };
