@@ -12,5 +12,11 @@ postRouter.post(
 );
 postRouter.get("/", authMiddleware.authenticate, postController.getAll);
 postRouter.get("/:id", authMiddleware.authenticate, postController.getOne);
+postRouter.delete(
+    "/:id",
+    authMiddleware.authenticate,
+    authMiddleware.isUser,
+    postController.deleteOne
+);
 
 export { postRouter };

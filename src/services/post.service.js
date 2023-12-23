@@ -22,10 +22,10 @@ class PostService {
         return posts;
     };
 
-    getOne = async (userId, postId) => {
+    getOne = async (userId, id) => {
         const post = await prisma.post.findUnique({
             where: {
-                id: postId
+                id: id
             }
         });
 
@@ -38,6 +38,28 @@ class PostService {
         }
 
         return post;
+    };
+
+    deleteOne = async (userId, id) => {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        if (!post) {
+            throw new CustomError("Post does not exist", 400);
+        }
+
+        if (post.userId !== userId) {
+            throw new CustomError("Post does not belong this user", 403);
+        }
+
+        await prisma.post.delete({
+            where: {
+                id: id
+            }
+        });
     };
 }
 

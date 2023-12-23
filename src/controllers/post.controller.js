@@ -44,5 +44,12 @@ class PostController {
             data: post
         });
     });
+
+    deleteOne = catchAsync(async (req, res) => {
+        const { userId, params } = req;
+
+        await postService.deleteOne(userId, params.id);
+        res.status(204).send();
+    });
 }
 export const postController = new PostController();
