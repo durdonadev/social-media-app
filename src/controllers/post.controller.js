@@ -70,5 +70,30 @@ class PostController {
             data: updatedPost
         });
     });
+
+    setVisibilityPrivate = catchAsync(async (req, res) => {
+        const { userId, params } = req;
+
+        await postService.changeVisibilityStatus(userId, params.id, "PRIVATE");
+        res.status(204).send();
+    });
+
+    setVisibilityFriendsOnly = catchAsync(async (req, res) => {
+        const { userId, params } = req;
+
+        await postService.changeVisibilityStatus(
+            userId,
+            params.id,
+            "FRIENDS_ONLY"
+        );
+        res.status(204).send();
+    });
+
+    setVisibilityPublic = catchAsync(async (req, res) => {
+        const { userId, params } = req;
+
+        await postService.changeVisibilityStatus(userId, params.id, "PUBLIC");
+        res.status(204).send();
+    });
 }
 export const postController = new PostController();

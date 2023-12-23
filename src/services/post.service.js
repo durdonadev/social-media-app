@@ -87,6 +87,31 @@ class PostService {
         });
         return updatedPost;
     };
+
+    changeVisibilityStatus = async (userId, id, visibilityStatus) => {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        if (!post) {
+            throw new CustomError("Post does not exist", 400);
+        }
+
+        if (post.userId !== userId) {
+            throw new CustomError("Post does not belong this user", 403);
+        }
+
+        await prisma.post.update({
+            where: {
+                id: id
+            },
+            data: {
+                visibility: visibilityStatus
+            }
+        });
+    };
 }
 
 export const postService = new PostService();

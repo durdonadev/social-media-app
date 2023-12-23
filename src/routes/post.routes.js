@@ -24,5 +24,25 @@ postRouter.patch(
     authMiddleware.isUser,
     postController.update
 );
+postRouter.patch(
+    "/:id/private",
+    authMiddleware.authenticate,
+    authMiddleware.isUser,
+    postController.setVisibilityPrivate
+);
+
+postRouter.patch(
+    "/:id/friends-only",
+    authMiddleware.authenticate,
+    authMiddleware.isUser,
+    postController.setVisibilityFriendsOnly
+);
+
+postRouter.patch(
+    "/:id/public",
+    authMiddleware.authenticate,
+    authMiddleware.isUser,
+    postController.setVisibilityPublic
+);
 
 export { postRouter };
