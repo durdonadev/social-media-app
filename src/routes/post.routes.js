@@ -18,5 +18,11 @@ postRouter.delete(
     authMiddleware.isUser,
     postController.deleteOne
 );
+postRouter.patch(
+    "/:id",
+    authMiddleware.authenticate,
+    authMiddleware.isUser,
+    postController.update
+);
 
 export { postRouter };

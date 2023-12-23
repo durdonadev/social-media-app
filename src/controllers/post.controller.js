@@ -51,5 +51,24 @@ class PostController {
         await postService.deleteOne(userId, params.id);
         res.status(204).send();
     });
+
+    update = catchAsync(async (req, res) => {
+        const { userId, params, body } = req;
+        const input = {};
+
+        if (body.content) {
+            input.content = body.content;
+        }
+
+        if (!input.content) {
+            throw new CustomError("No update data provided", 400);
+        }
+
+        const updatedPost = await postService.update(userId, params.id, input);
+
+        res.status(201).json({
+            data: updatedPost
+        });
+    });
 }
 export const postController = new PostController();
